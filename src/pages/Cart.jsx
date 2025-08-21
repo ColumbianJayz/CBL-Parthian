@@ -3,6 +3,7 @@ import { Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart, delCart } from "../redux/action";
 import { Link } from "react-router-dom";
+import { FaShoppingCart, FaPlus, FaMinus, FaArrowLeft } from "react-icons/fa";
 
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
@@ -10,14 +11,18 @@ const Cart = () => {
 
   const EmptyCart = () => {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
-            <h4 className="p-3 display-5">Your Cart is Empty</h4>
-            <Link to="/" className="btn  btn-outline-dark mx-4">
-              <i className="fa fa-arrow-left"></i> Continue Shopping
-            </Link>
-          </div>
+      <div className="mx-auto w-full max-w-2xl text-center">
+        <div className="bg-white py-12 px-6 shadow-lg sm:rounded-lg">
+          <FaShoppingCart className="text-6xl text-gray-300 mx-auto mb-6" />
+          <h4 className="text-2xl font-bold text-gray-900 mb-4">Your Cart is Empty</h4>
+          <p className="text-gray-600 mb-6">Looks like you haven't added any items to your cart yet.</p>
+          <Link 
+            to="/" 
+            className="inline-flex items-center px-6 py-3 border border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          >
+            <FaArrowLeft className="mr-2" />
+            Continue Shopping
+          </Link>
         </div>
       </div>
     );
@@ -26,6 +31,7 @@ const Cart = () => {
   const addItem = (product) => {
     dispatch(addCart(product));
   };
+  
   const removeItem = (product) => {
     dispatch(delCart(product));
   };
@@ -34,129 +40,117 @@ const Cart = () => {
     let subtotal = 0;
     let shipping = 30.0;
     let totalItems = 0;
-    state.map((item) => {
-      return (subtotal += item.price * item.qty);
+    
+    // 修复价格计算 - 处理包含美元符号和逗号的价格
+    state.forEach((item) => {
+      const cleanPrice = parseFloat(item.price.replace(/[$,]/g, ''));
+      subtotal += cleanPrice * item.qty;
+      totalItems += item.qty;
     });
-
-    state.map((item) => {
-      return (totalItems += item.qty);
-    });
+    
     return (
       <>
-        <section className="h-100 gradient-custom">
-          <div className="container py-5">
-            <div className="row d-flex justify-content-center my-4">
-              <div className="col-md-8">
-                <div className="card mb-4">
-                  <div className="card-header py-3">
-                    <h5 className="mb-0">Item List</h5>
-                  </div>
-                  <div className="card-body">
-                    {state.map((item) => {
-                      return (
-                        <div key={item.id}>
-                          <div className="row d-flex align-items-center">
-                            <div className="col-lg-3 col-md-12">
-                              <div
-                                className="bg-image rounded"
-                                data-mdb-ripple-color="light"
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Item List */}
+            <div className="lg:col-span-2">
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h5 className="text-xl font-semibold text-gray-900">Item List</h5>
+                </div>
+                <div className="p-6">
+                  {state.map((item, index) => {
+                    const cleanPrice = parseFloat(item.price.replace(/[$,]/g, ''));
+                    return (
+                      <div key={item.id}>
+                        <div className="flex items-center space-x-4 py-4">
+                          <div className="flex-shrink-0">
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="w-20 h-20 object-contain rounded-lg border border-gray-200"
+                            />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <p className="text-lg font-semibold text-gray-900 truncate">
+                              {item.title}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors duration-200"
+                                onClick={() => removeItem(item)}
                               >
-                                <img
-                                  src={item.image}
-                                  // className="w-100"
-                                  alt={item.title}
-                                  width={100}
-                                  height={75}
-                                />
-                              </div>
+                                <FaMinus className="w-4 h-4" />
+                              </button>
+
+                              <span className="w-12 text-center font-semibold text-gray-900">{item.qty}</span>
+
+                              <button
+                                className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors duration-200"
+                                onClick={() => addItem(item)}
+                              >
+                                <FaPlus className="w-4 h-4" />
+                              </button>
                             </div>
 
-                            <div className="col-lg-5 col-md-6">
-                              <p>
-                                <strong>{item.title}</strong>
+                            <div className="text-right min-w-[80px]">
+                              <p className="font-semibold text-gray-900">
+                                ${(cleanPrice * item.qty).toFixed(2)}
                               </p>
-                              {/* <p>Color: blue</p>
-                              <p>Size: M</p> */}
-                            </div>
-
-                            <div className="col-lg-4 col-md-6">
-                              <div
-                                className="d-flex mb-4"
-                                style={{ maxWidth: "300px" }}
-                              >
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    removeItem(item);
-                                  }}
-                                >
-                                  <i className="fas fa-minus"></i>
-                                </button>
-
-                                <p className="mx-5">{item.qty}</p>
-
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    addItem(item);
-                                  }}
-                                >
-                                  <i className="fas fa-plus"></i>
-                                </button>
-                              </div>
-
-                              <p className="text-start text-md-center">
-                                <strong>
-                                  <span className="text-muted">{item.qty}</span>{" "}
-                                  x ${item.price}
-                                </strong>
+                              <p className="text-sm text-gray-500">
+                                ${cleanPrice.toFixed(2)} each
                               </p>
                             </div>
                           </div>
-
-                          <hr className="my-4" />
                         </div>
-                      );
-                    })}
-                  </div>
+                        {index < state.length - 1 && (
+                          <hr className="border-gray-200" />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-              <div className="col-md-4">
-                <div className="card mb-4">
-                  <div className="card-header py-3 bg-light">
-                    <h5 className="mb-0">Order Summary</h5>
-                  </div>
-                  <div className="card-body">
-                    <ul className="list-group list-group-flush">
-                      <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                        Products ({totalItems})<span>${Math.round(subtotal)}</span>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                        Shipping
-                        <span>${shipping}</span>
-                      </li>
-                      <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                        <div>
-                          <strong>Total amount</strong>
-                        </div>
-                        <span>
-                          <strong>${Math.round(subtotal + shipping)}</strong>
-                        </span>
-                      </li>
-                    </ul>
+            </div>
 
-                    <Link
-                      to="/checkout"
-                      className="btn btn-dark btn-lg btn-block"
-                    >
-                      Go to checkout
-                    </Link>
+            {/* Order Summary */}
+            <div className="lg:col-span-1">
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                  <h5 className="text-xl font-semibold text-gray-900">Order Summary</h5>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Products ({totalItems})</span>
+                      <span className="font-semibold text-gray-900">${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Shipping</span>
+                      <span className="font-semibold text-gray-900">${shipping.toFixed(2)}</span>
+                    </div>
+                    <hr className="border-gray-200" />
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-gray-900">Total amount</span>
+                      <span className="text-lg font-bold text-green-600">${(subtotal + shipping).toFixed(2)}</span>
+                    </div>
                   </div>
+
+                  <Link
+                    to="/checkout"
+                    className="w-full mt-6 inline-flex justify-center items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  >
+                    Go to checkout
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </>
     );
   };
@@ -164,10 +158,15 @@ const Cart = () => {
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Cart</h1>
-        <hr />
-        {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Shopping Cart</h1>
+            <div className="w-24 h-1 bg-green-600 rounded mx-auto"></div>
+          </div>
+          
+          {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+        </div>
       </div>
     </>
   );

@@ -2,19 +2,25 @@ import React from "react";
 import { Navbar } from "../components";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { FaArrowLeft, FaCreditCard, FaMapMarkerAlt, FaUser } from "react-icons/fa";
+
 const Checkout = () => {
   const state = useSelector((state) => state.handleCart);
 
   const EmptyCart = () => {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
-            <h4 className="p-3 display-5">No item in Cart</h4>
-            <Link to="/" className="btn btn-outline-dark mx-4">
-              <i className="fa fa-arrow-left"></i> Continue Shopping
-            </Link>
-          </div>
+      <div className="mx-auto w-full max-w-2xl text-center">
+        <div className="bg-white py-12 px-6 shadow-lg sm:rounded-lg">
+          <FaMapMarkerAlt className="text-6xl text-gray-300 mx-auto mb-6" />
+          <h4 className="text-2xl font-bold text-gray-900 mb-4">No items in Cart</h4>
+          <p className="text-gray-600 mb-6">Please add some items to your cart before checkout.</p>
+          <Link 
+            to="/" 
+            className="inline-flex items-center px-6 py-3 border border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          >
+            <FaArrowLeft className="mr-2" />
+            Continue Shopping
+          </Link>
         </div>
       </div>
     );
@@ -24,256 +30,238 @@ const Checkout = () => {
     let subtotal = 0;
     let shipping = 30.0;
     let totalItems = 0;
-    state.map((item) => {
-      return (subtotal += item.price * item.qty);
+    
+    // 修复价格计算 - 处理包含美元符号和逗号的价格
+    state.forEach((item) => {
+      const cleanPrice = parseFloat(item.price.replace(/[$,]/g, ''));
+      subtotal += cleanPrice * item.qty;
+      totalItems += item.qty;
     });
-
-    state.map((item) => {
-      return (totalItems += item.qty);
-    });
+    
     return (
       <>
-        <div className="container py-5">
-          <div className="row my-4">
-            <div className="col-md-5 col-lg-4 order-md-last">
-              <div className="card mb-4">
-                <div className="card-header py-3 bg-light">
-                  <h5 className="mb-0">Order Summary</h5>
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Billing Address & Payment Form */}
+            <div className="lg:col-span-2">
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h4 className="text-lg font-semibold text-gray-900">Billing Address</h4>
                 </div>
-                <div className="card-body">
-                  <ul className="list-group list-group-flush">
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                      Products ({totalItems})<span>${Math.round(subtotal)}</span>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center px-0">
-                      Shipping
-                      <span>${shipping}</span>
-                    </li>
-                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                <div className="p-6">
+                  <form className="space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <strong>Total amount</strong>
-                      </div>
-                      <span>
-                        <strong>${Math.round(subtotal + shipping)}</strong>
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-7 col-lg-8">
-              <div className="card mb-4">
-                <div className="card-header py-3">
-                  <h4 className="mb-0">Billing address</h4>
-                </div>
-                <div className="card-body">
-                  <form className="needs-validation" novalidate>
-                    <div className="row g-3">
-                      <div className="col-sm-6 my-1">
-                        <label for="firstName" className="form-label">
+                        <label htmlFor="firstName" className="block text-xs font-medium text-gray-700 mb-1">
                           First name
                         </label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           id="firstName"
-                          placeholder=""
+                          placeholder="Enter your first name"
                           required
                         />
-                        <div className="invalid-feedback">
-                          Valid first name is required.
-                        </div>
                       </div>
 
-                      <div className="col-sm-6 my-1">
-                        <label for="lastName" className="form-label">
+                      <div>
+                        <label htmlFor="lastName" className="block text-xs font-medium text-gray-700 mb-1">
                           Last name
                         </label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           id="lastName"
-                          placeholder=""
+                          placeholder="Enter your last name"
                           required
                         />
-                        <div className="invalid-feedback">
-                          Valid last name is required.
-                        </div>
                       </div>
+                    </div>
 
-                      <div className="col-12 my-1">
-                        <label for="email" className="form-label">
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          id="email"
-                          placeholder="you@example.com"
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Please enter a valid email address for shipping
-                          updates.
-                        </div>
-                      </div>
+                    <div>
+                      <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-1">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        id="email"
+                        placeholder="you@example.com"
+                        required
+                      />
+                    </div>
 
-                      <div className="col-12 my-1">
-                        <label for="address" className="form-label">
-                          Address
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="address"
-                          placeholder="1234 Main St"
-                          required
-                        />
-                        <div className="invalid-feedback">
-                          Please enter your shipping address.
-                        </div>
-                      </div>
+                    <div>
+                      <label htmlFor="address" className="block text-xs font-medium text-gray-700 mb-1">
+                        Address
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        id="address"
+                        placeholder="1234 Main St"
+                        required
+                      />
+                    </div>
 
-                      <div className="col-12">
-                        <label for="address2" className="form-label">
-                          Address 2{" "}
-                          <span className="text-muted">(Optional)</span>
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          id="address2"
-                          placeholder="Apartment or suite"
-                        />
-                      </div>
+                    <div>
+                      <label htmlFor="address2" className="block text-xs font-medium text-gray-700 mb-1">
+                        Address 2 <span className="text-gray-500">(Optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        id="address2"
+                        placeholder="Apartment or suite"
+                      />
+                    </div>
 
-                      <div className="col-md-5 my-1">
-                        <label for="country" className="form-label">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label htmlFor="country" className="block text-xs font-medium text-gray-700 mb-1">
                           Country
                         </label>
-                        <br />
-                        <select className="form-select" id="country" required>
+                        <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" id="country" required>
                           <option value="">Choose...</option>
+                          <option>United States</option>
+                          <option>Canada</option>
+                          <option>United Kingdom</option>
+                          <option>Germany</option>
+                          <option>France</option>
+                          <option>Japan</option>
+                          <option>China</option>
                           <option>India</option>
                         </select>
-                        <div className="invalid-feedback">
-                          Please select a valid country.
-                        </div>
                       </div>
 
-                      <div className="col-md-4 my-1">
-                        <label for="state" className="form-label">
+                      <div>
+                        <label htmlFor="state" className="block text-xs font-medium text-gray-700 mb-1">
                           State
                         </label>
-                        <br />
-                        <select className="form-select" id="state" required>
+                        <select className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" id="state" required>
                           <option value="">Choose...</option>
-                          <option>Punjab</option>
+                          <option>California</option>
+                          <option>New York</option>
+                          <option>Texas</option>
+                          <option>Florida</option>
+                          <option>Virginia</option>
+                          <option>Massachusetts</option>
                         </select>
-                        <div className="invalid-feedback">
-                          Please provide a valid state.
-                        </div>
                       </div>
 
-                      <div className="col-md-3 my-1">
-                        <label for="zip" className="form-label">
+                      <div>
+                        <label htmlFor="zip" className="block text-xs font-medium text-gray-700 mb-1">
                           Zip
                         </label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           id="zip"
-                          placeholder=""
+                          placeholder="12345"
                           required
                         />
-                        <div className="invalid-feedback">
-                          Zip code required.
-                        </div>
                       </div>
                     </div>
 
-                    <hr className="my-4" />
+                    <hr className="border-gray-200" />
 
-                    <h4 className="mb-3">Payment</h4>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <FaCreditCard className="text-green-600 text-sm" />
+                      <h4 className="text-base font-semibold text-gray-900">Payment</h4>
+                    </div>
 
-                    <div className="row gy-3">
-                      <div className="col-md-6">
-                        <label for="cc-name" className="form-label">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="cc-name" className="block text-xs font-medium text-gray-700 mb-1">
                           Name on card
                         </label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           id="cc-name"
-                          placeholder=""
+                          placeholder="Full name as displayed on card"
                           required
                         />
-                        <small className="text-muted">
-                          Full name as displayed on card
-                        </small>
-                        <div className="invalid-feedback">
-                          Name on card is required
-                        </div>
                       </div>
 
-                      <div className="col-md-6">
-                        <label for="cc-number" className="form-label">
+                      <div>
+                        <label htmlFor="cc-number" className="block text-xs font-medium text-gray-700 mb-1">
                           Credit card number
                         </label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           id="cc-number"
-                          placeholder=""
+                          placeholder="1234 5678 9012 3456"
                           required
                         />
-                        <div className="invalid-feedback">
-                          Credit card number is required
-                        </div>
                       </div>
+                    </div>
 
-                      <div className="col-md-3">
-                        <label for="cc-expiration" className="form-label">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="cc-expiration" className="block text-xs font-medium text-gray-700 mb-1">
                           Expiration
                         </label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           id="cc-expiration"
-                          placeholder=""
+                          placeholder="MM/YY"
                           required
                         />
-                        <div className="invalid-feedback">
-                          Expiration date required
-                        </div>
                       </div>
 
-                      <div className="col-md-3">
-                        <label for="cc-cvv" className="form-label">
+                      <div>
+                        <label htmlFor="cc-cvv" className="block text-xs font-medium text-gray-700 mb-1">
                           CVV
                         </label>
                         <input
                           type="text"
-                          className="form-control"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                           id="cc-cvv"
-                          placeholder=""
+                          placeholder="123"
                           required
                         />
-                        <div className="invalid-feedback">
-                          Security code required
-                        </div>
                       </div>
                     </div>
 
-                    <hr className="my-4" />
+                    <hr className="border-gray-200" />
 
                     <button
-                      className="w-100 btn btn-primary "
-                      type="submit" disabled
+                      className="w-full px-5 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-md hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="submit"
+                      disabled
                     >
                       Continue to checkout
                     </button>
                   </form>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary */}
+            <div className="lg:col-span-1">
+              <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                  <h5 className="text-lg font-semibold text-gray-900">Order Summary</h5>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-600">Products ({totalItems})</span>
+                      <span className="text-sm font-semibold text-gray-900">${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-600">Shipping</span>
+                      <span className="text-sm font-semibold text-gray-900">${shipping.toFixed(2)}</span>
+                    </div>
+                    <hr className="border-gray-200" />
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-bold text-gray-900">Total amount</span>
+                      <span className="text-sm font-bold text-green-600">${(subtotal + shipping).toFixed(2)}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -282,13 +270,19 @@ const Checkout = () => {
       </>
     );
   };
+
   return (
     <>
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Checkout</h1>
-        <hr />
-        {state.length ? <ShowCheckout /> : <EmptyCart />}
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Checkout</h1>
+            <div className="w-20 h-1 bg-green-600 rounded mx-auto"></div>
+          </div>
+          
+          {state.length > 0 ? <ShowCheckout /> : <EmptyCart />}
+        </div>
       </div>
     </>
   );

@@ -7,6 +7,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
 import productsData from "../api/products";
 
@@ -59,88 +60,99 @@ const Products = () => {
   const ShowProducts = () => {
     return (
       <>
-        <div className="buttons text-center py-5">
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => setFilter(data)}
-          >
-            All
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("Europe")}
-          >
-            Europe
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("North America")}
-          >
-            North America
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("Asia")}
-          >
-            Asia
-          </button>
+        <div className="text-center py-2">
+          <div className="flex flex-wrap justify-center gap-3 mb-4">
+            <button
+              className="px-6 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              onClick={() => setFilter(data)}
+            >
+              All
+            </button>
+            <button
+              className="px-6 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              onClick={() => filterProduct("Europe")}
+            >
+              Europe
+            </button>
+            <button
+              className="px-6 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              onClick={() => filterProduct("North America")}
+            >
+              North America
+            </button>
+            <button
+              className="px-6 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              onClick={() => filterProduct("Asia")}
+            >
+              Asia
+            </button>
+          </div>
         </div>
 
-        {filter.map((product) => (
-          <div
-            key={product.id}
-            className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4"
-          >
-            <div className="card text-center h-100">
-              <img
-                className="card-img-top p-3"
-                src={product.image}
-                alt={product.name}
-                height={200}
-                style={{ objectFit: "contain" }}
-              />
-              <div className="card-body">
-                <h5 className="card-title">
-                  <b>{product.name.substring(0, 40)}</b>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filter.map((product, index) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200"
+            >
+              <div className="p-4">
+                <img
+                  className="w-full h-48 object-contain p-4"
+                  src={product.image}
+                  alt={product.name}
+                />
+              </div>
+              <div className="px-6 pb-4">
+                <h5 className="text-lg font-semibold text-gray-900 mb-2 text-center">
+                  {product.name.substring(0, 40)}
                 </h5>
-                <p className="card-text"><b>Price:</b> {product.price}</p>
-                <p className="card-text"><b>Region:</b> {product.region}</p>
+                <div className="space-y-2 mb-4">
+                  <p className="text-gray-700"><span className="font-semibold">Price:</span> {product.price}</p>
+                  <p className="text-gray-700"><span className="font-semibold">Region:</span> {product.region}</p>
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Link
+                    to={"/product/" + product.id}
+                    className="w-full px-4 py-2 bg-green-600 text-white text-center rounded-md hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  >
+                    View Details
+                  </Link>
+                  <button
+                    className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    onClick={() => {
+                      toast.success("Added to cart");
+                      addProduct(product);
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
-              <div className="card-body">
-                <Link
-                  to={"/product/" + product.id}
-                  className="btn btn-success m-1"
-                >
-                  View Details
-                </Link>
-                <button
-                  className="btn btn-success m-1"
-                  onClick={() => {
-                    toast.success("Added to cart");
-                    addProduct(product);
-                  }}
-                >
-                  Add to Cart
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </>
     );
   };
 
   return (
-    <div className="container my-3 py-3">
-      <div className="row">
-        <div className="col-12">
-          <h2 className="text-2xl font-bold tracking-wide text-green-600">
-            Marketplace
-          </h2>
-          <hr />
-        </div>
-      </div>
-      <div className="row justify-content-center">
+    <div className="w-full">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-2"
+      >
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          Marketplace
+        </h2>
+        <div className="w-24 h-1 bg-green-600 rounded"></div>
+      </motion.div>
+      
+      <div className="w-full">
         {loading ? <Loading /> : <ShowProducts />}
       </div>
     </div>

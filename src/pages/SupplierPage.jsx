@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Navbar } from "../components";
+import { motion } from "framer-motion";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 const allSuppliers = [
   {
@@ -27,6 +29,7 @@ const allSuppliers = [
     region: "Asia",
   },
 ]
+
 const SupplierPage = () => {
   const [data, setData] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -45,44 +48,82 @@ const SupplierPage = () => {
   };
 
   const regions = ["All", ...new Set(data.map(s => s.region))];
+  
   return (
     <>
-    <Navbar/>
-    <div className="container my-3 py-3">
-        <h1 className="text-center">Supplier Directory</h1>
-        <hr />
-        <p className="lead text-center">
-          The new and enhanced Parthian Supplier Directory brings together suppliers and companies showcasing their batteries all year round. The supplier directory is refreshed monthly.
-        </p>
-        <h2 className="text-center py-4">Our Suppliers</h2>
+      <Navbar/>
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mx-auto w-full max-w-5xl text-center"
+        >
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Supplier Directory
+          </h1>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            The new and enhanced Parthian Supplier Directory brings together suppliers and companies showcasing their batteries all year round. The supplier directory is refreshed monthly.
+          </p>
+        </motion.div>
 
-        {/* Filter Buttons */}
-        <div className="buttons text-center py-3">
-          {regions.map(region => (
-            <button
-              key={region}
-              className="btn btn-outline-dark btn-sm m-2"
-              onClick={() => handleFilter(region)}
-            >
-              {region}
-            </button>
-          ))}
-        </div>
-
-        {/* Supplier Cards */}
-        <div className="row">
-          {filtered.map((supplier) => (
-            <div className="col-md-3 col-sm-6 mb-3 px-3" key={supplier.id}>
-              <div className="card h-100">
-                <img className="card-img-top img-fluid" src={supplier.image} alt={supplier.name} height={160} />
-                <div className="card-body">
-                  <h5 className="card-title text-center">{supplier.name}</h5>
-                  <p className="text-muted text-center small">{supplier.region}</p>
-                </div>
-              </div>
+        {/* Filter Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mt-8 mx-auto w-full max-w-7xl"
+        >
+          <div className="bg-white py-6 px-6 shadow-lg sm:rounded-lg">
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-6">
+              Our Suppliers
+            </h2>
+            
+            {/* Filter Buttons */}
+            <div className="flex flex-wrap justify-center gap-3 mb-6">
+              {regions.map(region => (
+                <button
+                  key={region}
+                  className="px-6 py-2 border border-green-600 text-green-600 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                  onClick={() => handleFilter(region)}
+                >
+                  {region}
+                </button>
+              ))}
             </div>
-          ))}
-        </div>
+
+            {/* Supplier Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filtered.map((supplier, index) => (
+                <motion.div
+                  key={supplier.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                  className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200"
+                >
+                  <div className="aspect-w-1 aspect-h-1">
+                    <img 
+                      className="w-full h-48 object-contain p-2" 
+                      src={supplier.image} 
+                      alt={supplier.name} 
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+                      {supplier.name}
+                    </h3>
+                    <div className="flex items-center justify-center text-gray-600">
+                      <FaMapMarkerAlt className="text-green-600 mr-2" />
+                      <span className="text-sm">{supplier.region}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </div>
     </>
   );
